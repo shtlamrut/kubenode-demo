@@ -1,11 +1,10 @@
 pipeline {
-    agent {
-        kubernetes {
-            tools{
+    agent any
+            tools {
                 nodejs 'node'
             }
             yaml '''
-apiVersion: v1
+apiVersion: v1 
 kind: Pod
 spec:
   containers:
@@ -58,4 +57,4 @@ spec:
             }
         }
     }
-}
+
