@@ -1,34 +1,53 @@
 pipeline {
-    agent any
-    tools {
-        nodejs 'node'
-    }
-
-    
-    stages {
-       /* stage('Build') {
-            steps {
-               // sh 'nodejs --version'
-                //sh 'npm install'
-                //sh 'npm test'
+    agent {
+        kubernetes {
+            tools{
+                nodejs 'node'
             }
-        }*/
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: shell
+    image: ubuntu
+    command:
+    - sleep
+    args:
+    - infinity
+  - name: docker
+    env:
+    - name: DOCKER_HOST
+      value: 127.0.0.1
+    image: docker
+    command:
+    - cat
+    tty: true
+'''
+            // Can also wrap individual steps:
+            // container('shell') {
+            //     sh 'hostname'
+            // }
+            defaultContainer 'shell'
+        }
+    }
+    stages {
+
         stage('Image Build') {
-        environment {
-        DOCKERHUB_CREDS = credentials('demo-docker')
-      }
-       steps {
-          sh "docker build -t shtlamrut/kubenode-demo:${env.GIT_COMMIT} ."
-          sh "docker login --username $DOCKERHUB_CREDS_USR --password $DOCKERHUB_CREDS_PSW" 
-          sh "docker push shtlamrut/kubenode-demo:${env.GIT_COMMIT}"
+          environment {
+            DOCKERHUB_CREDS = credentials('dockerhub')
+         }
+        steps {
+          container('docker') {
+           sh "docker build -t mynamesandesh/argocd-demo:${env.GIT_COMMIT} ."
+           sh "docker login --username $DOCKERHUB_CREDS_USR --password $DOCKERHUB_CREDS_PSW" 
+           sh "docker push mynamesandesh/argocd-demo:${env.GIT_COMMIT}"
         }
       }
-    
-
-        stage('Test') {
+    }
+        stage('Main') {
             steps {
-                sh 'npm --version'
-                
+                sh 'hostname'
             }
         }
     }
