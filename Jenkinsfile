@@ -29,7 +29,7 @@ spec:
             // }
             defaultContainer 'shell'
         }
-    }
+
     stages {
         
         stage('example') {
