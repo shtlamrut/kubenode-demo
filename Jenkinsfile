@@ -32,6 +32,13 @@ spec:
         }
     }
     stages {
+        
+        stage('example') {
+            steps {
+                //sh 'npm install'
+                sh 'npm version'
+            }
+        }
 
         stage('Image Build') {
           environment {
@@ -39,9 +46,9 @@ spec:
          }
         steps {
           container('docker') {
-           sh "docker build -t mynamesandesh/argocd-demo:${env.GIT_COMMIT} ."
+           sh "docker build -t shtlamrut/kubenode-demo:${env.GIT_COMMIT} ."
            sh "docker login --username $DOCKERHUB_CREDS_USR --password $DOCKERHUB_CREDS_PSW" 
-           sh "docker push mynamesandesh/argocd-demo:${env.GIT_COMMIT}"
+           sh "docker push shtlamrut/kubenode-demo:${env.GIT_COMMIT}"
         }
       }
     }
